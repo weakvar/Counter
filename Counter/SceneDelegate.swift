@@ -16,9 +16,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
+        guard let windowScene = (scene as? UIWindowScene) else { return }
         let rootViewController = CounterViewController()
         
-        let window = UIWindow()
+        let window = UIWindow(windowScene: windowScene)
         window.rootViewController = rootViewController
         window.makeKeyAndVisible()
 
