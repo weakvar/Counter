@@ -51,6 +51,7 @@ final class CounterViewController: UIViewController {
         let countButton = UIButton(type: .system)
         countButton.setTitle("Добавить еще", for: .normal)
         countButton.configuration = configuration
+        countButton.addTarget(self, action: #selector(incrementCount), for: .touchUpInside)
         countButton.translatesAutoresizingMaskIntoConstraints = false
 
         return countButton
@@ -99,6 +100,18 @@ private extension CounterViewController {
             counterStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             counterStackView.bottomAnchor.constraint(equalTo: countButton.topAnchor, constant: -32),
         ])
+    }
+
+}
+
+// MARK: - Update Views
+
+private extension CounterViewController {
+
+    @objc
+    func incrementCount() {
+        currentCount += 1
+        counterLabel.text = "\(currentCount)"
     }
 
 }
