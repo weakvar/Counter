@@ -42,19 +42,45 @@ final class CounterViewController: UIViewController {
         return counterStackView
     }()
 
-    private lazy var countButton: UIButton = {
+    private lazy var incrementButton: UIButton = {
         var configuration = UIButton.Configuration.filled()
         configuration.image = UIImage(systemName: "plus")
         configuration.imagePadding = 8
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
 
-        let countButton = UIButton(type: .system)
-        countButton.setTitle("Добавить еще", for: .normal)
-        countButton.configuration = configuration
-        countButton.addTarget(self, action: #selector(incrementCount), for: .touchUpInside)
-        countButton.translatesAutoresizingMaskIntoConstraints = false
+        let incrementButton = UIButton(type: .system)
+        incrementButton.configuration = configuration
+        incrementButton.addTarget(self, action: #selector(incrementCount), for: .touchUpInside)
+        incrementButton.translatesAutoresizingMaskIntoConstraints = false
 
-        return countButton
+        return incrementButton
+    }()
+
+    private lazy var decrementButton: UIButton = {
+        var configuration = UIButton.Configuration.filled()
+        configuration.image = UIImage(systemName: "minus")
+        configuration.imagePadding = 8
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+        configuration.baseBackgroundColor = .red
+
+        let decrementButton = UIButton(type: .system)
+        decrementButton.configuration = configuration
+        decrementButton.addTarget(self, action: #selector(decrementCount), for: .touchUpInside)
+        decrementButton.isEnabled = false
+        decrementButton.translatesAutoresizingMaskIntoConstraints = false
+
+        return decrementButton
+    }()
+
+    private lazy var buttonsStackView: UIStackView = {
+        let buttonsStackView = UIStackView()
+        buttonsStackView.axis = .horizontal
+        buttonsStackView.distribution = .fill
+        buttonsStackView.alignment = .fill
+        buttonsStackView.spacing = 8
+        buttonsStackView.translatesAutoresizingMaskIntoConstraints = false
+
+        return buttonsStackView
     }()
 
     // MARK: - Properties
@@ -89,16 +115,18 @@ private extension CounterViewController {
 
     func setupConstraints() {
         view.addSubview(counterStackView)
-        view.addSubview(countButton)
+        view.addSubview(buttonsStackView)
         counterStackView.addArrangedSubview(counterLabel)
         counterStackView.addArrangedSubview(descriptionLabel)
+        buttonsStackView.addArrangedSubview(incrementButton)
+        buttonsStackView.addArrangedSubview(decrementButton)
 
         NSLayoutConstraint.activate([
-            countButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            countButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            buttonsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            buttonsStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             counterStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             counterStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            counterStackView.bottomAnchor.constraint(equalTo: countButton.topAnchor, constant: -32),
+            counterStackView.bottomAnchor.constraint(equalTo: incrementButton.topAnchor, constant: -32),
         ])
     }
 
@@ -112,6 +140,27 @@ private extension CounterViewController {
     func incrementCount() {
         currentCount += 1
         counterLabel.text = "\(currentCount)"
+
+        if currentCount > 0 && !decrementButton.isEnabled {
+            setDecrementButtonEnabled(true)
+        }
+    }
+
+    @objc
+    func decrementCount() {
+        guard currentCount > 0 else { return }
+        
+        currentCount -= 1
+        counterLabel.text = "\(currentCount)"
+
+        if currentCount == 0 && decrementButton.isEnabled {
+            setDecrementButtonEnabled(false)
+        }
+    }
+
+    func setDecrementButtonEnabled(_ isEnabled: Bool) {
+        guard decrementButton.isEnabled != isEnabled else { return }
+        decrementButton.isEnabled = isEnabled
     }
 
 }
