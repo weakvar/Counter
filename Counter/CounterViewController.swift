@@ -24,7 +24,7 @@ final class CounterViewController: UIViewController {
     private lazy var descriptionLabel: UILabel = {
         let descriptionLabel = UILabel()
         descriptionLabel.font = .preferredFont(forTextStyle: .callout)
-        descriptionLabel.text = "Текущий счет"
+        descriptionLabel.text = "Значение счётчика"
         descriptionLabel.textColor = .secondaryLabel
         descriptionLabel.textAlignment = .center
 
