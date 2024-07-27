@@ -24,7 +24,7 @@ final class CounterViewController: UIViewController {
     private lazy var descriptionLabel: UILabel = {
         let descriptionLabel = UILabel()
         descriptionLabel.font = .preferredFont(forTextStyle: .callout)
-        descriptionLabel.text = "Значение счётчика"
+        descriptionLabel.text = "Текущий счет"
         descriptionLabel.textColor = .secondaryLabel
         descriptionLabel.textAlignment = .center
 
@@ -83,6 +83,18 @@ final class CounterViewController: UIViewController {
         return buttonsStackView
     }()
 
+    private lazy var countHistoryTextView: UITextView = {
+        let countHistoryTextView = UITextView()
+        countHistoryTextView.font = .preferredFont(forTextStyle: .callout)
+        countHistoryTextView.textColor = .secondaryLabel
+        countHistoryTextView.textAlignment = .natural
+        countHistoryTextView.backgroundColor = .secondarySystemBackground
+        countHistoryTextView.layer.cornerRadius = 16
+        countHistoryTextView.translatesAutoresizingMaskIntoConstraints = false
+
+        return countHistoryTextView
+    }()
+
     // MARK: - Properties
 
     private var currentCount = 0
@@ -106,6 +118,7 @@ private extension CounterViewController {
 
     func setup() {
         setupView()
+        setupNavigationBar()
         setupConstraints()
     }
 
@@ -113,13 +126,19 @@ private extension CounterViewController {
         view.backgroundColor = .systemBackground
     }
 
+    func setupNavigationBar() {
+        navigationItem.title = "Счетчик"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Сбросить", style: .plain, target: self, action: #selector(resetCounter))
+    }
+
     func setupConstraints() {
         view.addSubview(counterStackView)
         view.addSubview(buttonsStackView)
+        view.addSubview(countHistoryTextView)
         counterStackView.addArrangedSubview(counterLabel)
         counterStackView.addArrangedSubview(descriptionLabel)
-        buttonsStackView.addArrangedSubview(incrementButton)
         buttonsStackView.addArrangedSubview(decrementButton)
+        buttonsStackView.addArrangedSubview(incrementButton)
 
         NSLayoutConstraint.activate([
             buttonsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -127,6 +146,10 @@ private extension CounterViewController {
             counterStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             counterStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             counterStackView.bottomAnchor.constraint(equalTo: incrementButton.topAnchor, constant: -32),
+            countHistoryTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            countHistoryTextView.topAnchor.constraint(equalTo: buttonsStackView.bottomAnchor, constant: 32),
+            countHistoryTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
+            countHistoryTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32)
         ])
     }
 
@@ -156,6 +179,13 @@ private extension CounterViewController {
         if currentCount == 0 && decrementButton.isEnabled {
             setDecrementButtonEnabled(false)
         }
+    }
+
+    @objc
+    func resetCounter() {
+        currentCount = 0
+        counterLabel.text = "\(currentCount)"
+        setDecrementButtonEnabled(false)
     }
 
     func setDecrementButtonEnabled(_ isEnabled: Bool) {

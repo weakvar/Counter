@@ -17,7 +17,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         options connectionOptions: UIScene.ConnectionOptions
     ) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        let rootViewController = CounterViewController()
+        let counterViewController = CounterViewController()
+        let rootViewController = UINavigationController(rootViewController: counterViewController)
         
         let window = UIWindow(windowScene: windowScene)
         window.rootViewController = rootViewController
