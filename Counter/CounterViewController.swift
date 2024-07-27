@@ -196,7 +196,7 @@ private extension CounterViewController {
         currentCount -= 1
         counterLabel.text = "\(currentCount)"
 
-        updateHistoryText(withAction: .increment)
+        updateHistoryText(withAction: .decrement)
         updateResetButton()
     }
 
