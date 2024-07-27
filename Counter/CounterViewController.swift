@@ -99,6 +99,7 @@ final class CounterViewController: UIViewController {
         countHistoryTextView.contentInset = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         countHistoryTextView.isEditable = false
         countHistoryTextView.isScrollEnabled = true
+        countHistoryTextView.alwaysBounceVertical = true
         countHistoryTextView.showsVerticalScrollIndicator = false
         countHistoryTextView.showsHorizontalScrollIndicator = false
         countHistoryTextView.backgroundColor = .secondarySystemBackground
