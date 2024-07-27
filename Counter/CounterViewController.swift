@@ -112,7 +112,7 @@ final class CounterViewController: UIViewController {
     private var currentCount: UInt = 0
     private var countHistoryText = "История изменений:"
 
-    lazy var dateFormatter: DateFormatter = {
+    private lazy var dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
