@@ -47,6 +47,7 @@ final class CounterViewController: UIViewController {
         configuration.image = UIImage(systemName: "plus")
         configuration.imagePadding = 8
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+        configuration.baseBackgroundColor = .red
 
         let incrementButton = UIButton(type: .system)
         incrementButton.configuration = configuration
@@ -61,15 +62,21 @@ final class CounterViewController: UIViewController {
         configuration.image = UIImage(systemName: "minus")
         configuration.imagePadding = 8
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-        configuration.baseBackgroundColor = .red
+        configuration.baseBackgroundColor = .tintColor
 
         let decrementButton = UIButton(type: .system)
         decrementButton.configuration = configuration
         decrementButton.addTarget(self, action: #selector(decrementCount), for: .touchUpInside)
-        decrementButton.isEnabled = false
         decrementButton.translatesAutoresizingMaskIntoConstraints = false
 
         return decrementButton
+    }()
+
+    private lazy var resetButton: UIBarButtonItem = {
+        let resetButton = UIBarButtonItem(title: "Сбросить", style: .plain, target: self, action: #selector(resetCounter))
+        resetButton.isEnabled = false
+
+        return resetButton
     }()
 
     private lazy var buttonsStackView: UIStackView = {
@@ -86,8 +93,14 @@ final class CounterViewController: UIViewController {
     private lazy var countHistoryTextView: UITextView = {
         let countHistoryTextView = UITextView()
         countHistoryTextView.font = .preferredFont(forTextStyle: .callout)
+        countHistoryTextView.text = countHistoryText
         countHistoryTextView.textColor = .secondaryLabel
         countHistoryTextView.textAlignment = .natural
+        countHistoryTextView.contentInset = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+        countHistoryTextView.isEditable = false
+        countHistoryTextView.isScrollEnabled = true
+        countHistoryTextView.showsVerticalScrollIndicator = false
+        countHistoryTextView.showsHorizontalScrollIndicator = false
         countHistoryTextView.backgroundColor = .secondarySystemBackground
         countHistoryTextView.layer.cornerRadius = 16
         countHistoryTextView.translatesAutoresizingMaskIntoConstraints = false
@@ -97,7 +110,17 @@ final class CounterViewController: UIViewController {
 
     // MARK: - Properties
 
-    private var currentCount = 0
+    private var currentCount: UInt = 0
+    private var countHistoryText = "История изменений:"
+
+    lazy var dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .short
+        dateFormatter.locale = Locale(identifier: "ru_RU")
+
+        return dateFormatter
+    }()
 
     // MARK: - UIViewController's Lifecycle
 
@@ -128,7 +151,7 @@ private extension CounterViewController {
 
     func setupNavigationBar() {
         navigationItem.title = "Счетчик"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Сбросить", style: .plain, target: self, action: #selector(resetCounter))
+        navigationItem.rightBarButtonItem = resetButton
     }
 
     func setupConstraints() {
@@ -164,33 +187,53 @@ private extension CounterViewController {
         currentCount += 1
         counterLabel.text = "\(currentCount)"
 
-        if currentCount > 0 && !decrementButton.isEnabled {
-            setDecrementButtonEnabled(true)
-        }
+        updateHistoryText(withAction: .increment)
+        updateResetButton()
     }
 
     @objc
     func decrementCount() {
-        guard currentCount > 0 else { return }
-        
+        guard currentCount > 0 else {
+            updateHistoryText(withAction: .failToDecrementBelowZero)
+            return
+        }
+
         currentCount -= 1
         counterLabel.text = "\(currentCount)"
 
-        if currentCount == 0 && decrementButton.isEnabled {
-            setDecrementButtonEnabled(false)
-        }
+        updateHistoryText(withAction: .increment)
+        updateResetButton()
     }
 
     @objc
     func resetCounter() {
         currentCount = 0
         counterLabel.text = "\(currentCount)"
-        setDecrementButtonEnabled(false)
+
+        updateHistoryText(withAction: .reset)
+        updateResetButton()
     }
 
-    func setDecrementButtonEnabled(_ isEnabled: Bool) {
-        guard decrementButton.isEnabled != isEnabled else { return }
-        decrementButton.isEnabled = isEnabled
+    func updateResetButton() {
+        resetButton.isEnabled = currentCount > 0
+    }
+
+    func updateHistoryText(withAction action: CountHistoryAction) {
+        let currentDate = Date()
+        let formattedCurrentDate = dateFormatter.string(from: currentDate)
+
+        switch action {
+        case .increment:
+            countHistoryText += "\n\(formattedCurrentDate): значение изменено на +1"
+        case .decrement:
+            countHistoryText += "\n\(formattedCurrentDate): значение изменено на -1"
+        case .reset:
+            countHistoryText += "\n\(formattedCurrentDate): значение сброшено"
+        case .failToDecrementBelowZero:
+            countHistoryText += "\n\(formattedCurrentDate): попытка уменьшить значение счетчика ниже 0"
+        }
+
+        countHistoryTextView.text = countHistoryText
     }
 
 }
