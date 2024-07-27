@@ -52,7 +52,6 @@ final class CounterViewController: UIViewController {
         let incrementButton = UIButton(type: .system)
         incrementButton.configuration = configuration
         incrementButton.addTarget(self, action: #selector(incrementCount), for: .touchUpInside)
-        incrementButton.translatesAutoresizingMaskIntoConstraints = false
 
         return incrementButton
     }()
@@ -67,7 +66,6 @@ final class CounterViewController: UIViewController {
         let decrementButton = UIButton(type: .system)
         decrementButton.configuration = configuration
         decrementButton.addTarget(self, action: #selector(decrementCount), for: .touchUpInside)
-        decrementButton.translatesAutoresizingMaskIntoConstraints = false
 
         return decrementButton
     }()
