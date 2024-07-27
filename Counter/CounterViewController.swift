@@ -128,10 +128,6 @@ final class CounterViewController: UIViewController {
         setup()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
 }
 
 // MARK: - Setup Views
